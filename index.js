@@ -1,15 +1,24 @@
 const express = require("express");
-
+const http = require("http");
+const PORT = 5000 || process.env.PORT;
 const app = express();
 
-const http = require("http");
+const httpServer = http.createServer(app);
+const { server, Server } = require("socket.io");
+const io = new Server(httpServer);
 
-const server = http.createServer(app);
+io.on("connection", (socket) => {
+  console.log("new user connected to our app");
 
-app.get("/", (req, res) => {
-  res.send("Start with socket io");
+  io.on("disconnect", (socket) => {
+    console.log("user disconnected");
+  });
 });
 
-app.listen(5000, function () {
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/app.html");
+});
+
+httpServer.listen(PORT, function () {
   console.log("Hellow server is running at 5000");
 });
